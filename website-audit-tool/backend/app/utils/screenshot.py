@@ -47,7 +47,7 @@ def capture_screenshot(url: str):
 
             browser.close()
 
-        return str(screenshot_path)
+        return f"/reports/screenshots/{filename}"
 
     except Exception as e:
         import traceback
