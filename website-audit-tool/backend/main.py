@@ -48,8 +48,7 @@ templates = Jinja2Templates(
 
 @app.on_event("startup")
 def on_startup() -> None:
-    pass
-
+    init_db()
 
 @app.get("/health")
 def health_check() -> dict[str, str]:
