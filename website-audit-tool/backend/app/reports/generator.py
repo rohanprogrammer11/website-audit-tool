@@ -176,9 +176,13 @@ def build_pdf_report(audit, findings: list) -> bytes:
 
     if audit.screenshot_path:
 
+        screenshot_path = audit.screenshot_path.lstrip("/")
+
         screenshot_path = os.path.abspath(
-            audit.screenshot_path
+            screenshot_path
         )
+
+        print("PDF Screenshot:", screenshot_path)
 
         if os.path.exists(
             screenshot_path
@@ -202,8 +206,182 @@ def build_pdf_report(audit, findings: list) -> bytes:
                 Spacer(1, 0.2 * inch)
 
             ])
-
+        
     story.append(PageBreak())
+    
+    # PERFORMANCE METRICS
+
+    if getattr(audit, "performance_metrics", None):
+
+        story.append(
+            Paragraph(
+                "Performance Metrics",
+                styles["Heading2"]
+            )
+        )
+
+        metrics = audit.performance_metrics
+
+        rows = [
+            ["Metric", "Value"],
+            ["FCP", str(metrics.get("fcp", "-"))],
+            ["LCP", str(metrics.get("lcp", "-"))],
+            ["Speed Index", str(metrics.get("speed_index", "-"))],
+            ["TTI", str(metrics.get("tti", "-"))],
+            ["TBT", str(metrics.get("tbt", "-"))],
+            ["CLS", str(metrics.get("cls", "-"))],
+        ]
+
+        table = Table(rows)
+
+        table.setStyle(
+            TableStyle([
+                ("BACKGROUND",(0,0),(-1,0),colors.HexColor("#2563EB")),
+                ("TEXTCOLOR",(0,0),(-1,0),colors.white),
+                ("GRID",(0,0),(-1,-1),1,colors.black)
+            ])
+        )
+
+        story.extend([
+            table,
+            Spacer(1,0.2*inch)
+        ])  
+        
+        # SECURITY CHECKS
+
+    if getattr(audit, "security_metrics", None):
+
+        story.append(
+            Paragraph(
+                "Security Checks",
+                styles["Heading2"]
+            )
+        )
+
+        rows = [["Check", "Status"]]
+
+        for key, value in audit.security_metrics.items():
+            rows.append([
+                str(key),
+                str(value)
+            ])
+
+        table = Table(rows)
+
+        table.setStyle(
+            TableStyle([
+                ("BACKGROUND",(0,0),(-1,0),colors.HexColor("#DC2626")),
+                ("TEXTCOLOR",(0,0),(-1,0),colors.white),
+                ("GRID",(0,0),(-1,-1),1,colors.black)
+            ])
+        )
+
+        story.extend([
+            table,
+            Spacer(1,0.2*inch)
+        ])
+        
+        # PERFORMANCE METRICS
+
+        if getattr(audit, "performance_metrics", None):
+
+            story.append(
+                Paragraph(
+                    "Performance Metrics",
+                    styles["Heading2"]
+                )
+            )
+
+            perf = audit.performance_metrics
+
+            perf_rows = [
+                ["Metric", "Value"],
+                ["FCP", perf.get("fcp", "-")],
+                ["LCP", perf.get("lcp", "-")],
+                ["Speed Index", perf.get("speed_index", "-")],
+                ["TTI", perf.get("tti", "-")],
+                ["TBT", perf.get("tbt", "-")],
+                ["CLS", perf.get("cls", "-")]
+            ]
+
+            perf_table = Table(
+                perf_rows,
+                colWidths=[2.5 * inch, 2.5 * inch]
+            )
+
+            perf_table.setStyle(
+                TableStyle([
+                    ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#16A34A")),
+                    ("TEXTCOLOR", (0,0), (-1,0), colors.white),
+                    ("GRID", (0,0), (-1,-1), 1, colors.black),
+                    ("FONTNAME", (0,0), (-1,0), "Helvetica-Bold")
+                ])
+            )
+
+            story.extend([
+                perf_table,
+                Spacer(1, 0.2 * inch)
+            ])
+        
+        # ACCESSIBILITY DETAILS
+
+    if getattr(audit, "accessibility_metrics", None):
+
+        story.append(
+            Paragraph(
+                "Accessibility Details",
+                styles["Heading2"]
+            )
+        )
+
+        rows = [["Metric", "Value"]]
+
+        for key, value in audit.accessibility_metrics.items():
+            rows.append([
+                str(key),
+                str(value)
+            ])
+
+        table = Table(rows)
+
+        table.setStyle(
+            TableStyle([
+                ("BACKGROUND",(0,0),(-1,0),colors.HexColor("#06B6D4")),
+                ("TEXTCOLOR",(0,0),(-1,0),colors.white),
+                ("GRID",(0,0),(-1,-1),1,colors.black)
+            ])
+        )
+
+        story.extend([
+            table,
+            Spacer(1,0.2*inch)
+        ])
+        
+        # UI/UX ANALYSIS
+
+    if findings:
+
+        story.append(
+            Paragraph(
+                "UI/UX Analysis",
+                styles["Heading2"]
+            )
+        )
+
+        for finding in findings:
+
+            if finding.category == "UI/UX":
+
+                story.append(
+                    Paragraph(
+                        f"• {finding.issue}",
+                        styles["BodyText"]
+                    )
+                )
+
+        story.append(
+            Spacer(1,0.2*inch)
+        )
 
     # AI RECOMMENDATIONS
 
