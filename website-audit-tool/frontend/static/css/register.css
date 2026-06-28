@@ -264,11 +264,15 @@ body {
   max-height: calc(100vh - var(--nav-h) - var(--sp-lg));
   overflow-y: auto;
   overflow-x: hidden;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(148,163,184,0.3) transparent;
 }
 
-.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar { width: 6px; }
+.sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(148,163,184,.5);
+}
 .sidebar::-webkit-scrollbar-thumb { background: rgba(148,163,184,0.3); border-radius: 999px; }
 
 .sidebar-brand {
@@ -336,8 +340,10 @@ body {
 /* ============================================================
    AUDIT TABLE  — scrollable wrapper added via CSS
    ============================================================ */
-.table-responsive { -webkit-overflow-scrolling: touch; border-radius: var(--radius-sm); }
-
+.table-responsive {
+    overflow-x: auto;
+    border-radius: var(--radius-sm);
+}
 .audit-table { width: 100%; }
 
 .audit-table thead th {
@@ -506,7 +512,6 @@ a.btn, button { min-height: 44px; }
     overflow-x: auto;
     gap: 0.4rem;
     padding-bottom: 4px;
-    scrollbar-width: none;
   }
 
   .sidebar .nav.flex-column::-webkit-scrollbar { display: none; }
